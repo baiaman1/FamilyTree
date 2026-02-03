@@ -19,6 +19,12 @@ public class AppDbContext : DbContext, IAppDbContext
         await Persons.AddAsync(person, ct);
     }
 
+    public Task RemovePersonAsync(Person person, CancellationToken ct)
+    {
+        Persons.Remove(person);
+        return Task.CompletedTask;
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Person>(entity =>

@@ -13,6 +13,7 @@ public interface IAppDbContext
 
     // WRITE
     Task AddPersonAsync(Person person, CancellationToken ct);
+    Task RemovePersonAsync(Person person, CancellationToken ct);
 
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

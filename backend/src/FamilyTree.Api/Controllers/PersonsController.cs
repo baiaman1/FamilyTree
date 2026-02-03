@@ -1,4 +1,5 @@
 ﻿using Application.Commands;
+using Application.DTOs;
 using Application.Handlers;
 using Application.Queries;
 using FamilyTree.Application.Services;
@@ -14,15 +15,21 @@ public class PersonsController : ControllerBase
     private readonly GetRootPersonHandler _getRootHandler;
     private readonly GetChildrenHandler _getChildrenHandler;
     private readonly AddChildHandler _addChildHandler;
+    private readonly UpdatePersonHandler _updateHandler;
+    private readonly DeletePersonHandler _deleteHandler;
 
     public PersonsController(
         GetRootPersonHandler getRootHandler,
         GetChildrenHandler getChildrenHandler,
-        AddChildHandler addChildHandler)
+        AddChildHandler addChildHandler,
+        UpdatePersonHandler updatePersonHandler,
+        DeletePersonHandler deletePersonHandler)
     {
         _getRootHandler = getRootHandler;
         _getChildrenHandler = getChildrenHandler;
         _addChildHandler = addChildHandler;
+        _updateHandler = updatePersonHandler;
+        _deleteHandler = deletePersonHandler;
     }
 
     /// <summary>
@@ -61,4 +68,22 @@ public class PersonsController : ControllerBase
 
         return Ok(new { Id = newId });
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(
+    Guid id,
+    [FromBody] UpdatePersonDto dto,
+    CancellationToken ct)
+    {
+        await _updateHandler.Handle(new UpdatePersonCommand(id, dto.Name), ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    {
+        await _deleteHandler.Handle(new DeletePersonCommand(id), ct);
+        return NoContent();
+    }
+
 }

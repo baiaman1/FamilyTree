@@ -28,6 +28,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<GetRootPersonHandler>();
         services.AddScoped<GetChildrenHandler>();
         services.AddScoped<AddChildHandler>();
+        services.AddScoped<UpdatePersonHandler>();
+        services.AddScoped<DeletePersonHandler>();
 
         return services;
     }

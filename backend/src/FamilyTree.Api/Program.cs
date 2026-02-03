@@ -1,4 +1,4 @@
-using FamilyTree.Infrastructure.Persistence;
+﻿using FamilyTree.Infrastructure.Persistence;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
@@ -12,6 +12,18 @@ builder.Services.AddControllers();
 // Swagger UI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // DI
 builder.Services.AddApplicationServices(builder.Configuration);
@@ -32,6 +44,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// 👇 ВАЖНО: CORS ДО authorization и controllers
+app.UseCors("FrontendPolicy");
+
 app.UseAuthorization();
 app.MapControllers();
 
