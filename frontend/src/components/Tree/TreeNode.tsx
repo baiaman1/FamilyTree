@@ -17,7 +17,7 @@ export const TreeNode = ({ node }: Props) => {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(node.name);
 
-//   const addChild = useAddChild();
+  const addChild = useAddChild();
   const updatePerson = useUpdatePerson();
   const deletePerson = useDeletePerson();
 

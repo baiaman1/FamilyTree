@@ -1,23 +1,38 @@
+// import { useQuery } from "@tanstack/react-query";
+// import { personsApi } from "../api/persons.api";
+// import { SvgTree } from "../components/SvgTree/SvgTree";
+
+// export const TreePage = () => {
+//   const { data } = useQuery({
+//     queryKey: ["root"],
+//     queryFn: personsApi.getRoot,
+//   });
+
+//   if (!data) return null;
+
+//   return (
+//     <SvgTree
+//       root={{
+//         id: data.id,
+//         name: data.name,
+//         hasChildren: data.hasChildren,
+//       }}
+//     />
+//   );
+// };
+
 import { useQuery } from "@tanstack/react-query";
 import { personsApi } from "../api/persons.api";
-import { SvgTree } from "../components/SvgTree/SvgTree";
+import { Tree } from "../components/Tree/Tree";
 
 export const TreePage = () => {
-  const { data } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["root"],
     queryFn: personsApi.getRoot,
   });
 
-  if (!data) return null;
+  if (isLoading) return <div>Загрузка...</div>;
+  if (error || !data) return <div>Ошибка загрузки</div>;
 
-  return (
-    <SvgTree
-      root={{
-        id: data.id,
-        name: data.name,
-        hasChildren: data.hasChildren,
-      }}
-    />
-  );
+  return <Tree root={data} />;
 };
-
