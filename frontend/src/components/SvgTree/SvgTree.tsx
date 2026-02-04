@@ -4,6 +4,8 @@ import { SvgNode } from "./SvgNode";
 import { useLoadChildren } from "./useLoadChildren";
 import { zoom, zoomIdentity } from "d3-zoom";
 import { select } from "d3-selection";
+import { useSvgMutations } from "./useSvgMutations";
+import { useTreeLayout } from "./useTreeLayout";
 
 type Props = {
   root: TreeNodeData;
@@ -15,31 +17,66 @@ export const SvgTree = ({ root }: Props) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const gRef = useRef<SVGGElement | null>(null);
 
+  const layoutedTree = useTreeLayout(tree);
+
   const loadChildren = useLoadChildren();
 
-  const onExpand = async (node: TreeNodeData) => {
-    if (node.expanded) {
-        node.expanded = false;
-        setTree({ ...tree });
-        return;
-    }
+  const { addChild, deleteNode } = useSvgMutations();
 
-    await loadChildren(node);
-    node.expanded = true;
+const onExpand = async (nodeId: string) => {
+  const target = findNodeById(tree, nodeId);
+  if (!target) return;
+
+  if (target.expanded) {
+    target.expanded = false;
     setTree({ ...tree });
+    return;
+  }
+
+  await loadChildren(target);
+  target.expanded = true;
+  setTree({ ...tree });
 };
 
-const onEdit = (node: TreeNodeData) => {
-  const name = prompt("Новое имя", node.name);
+const onAddChild = async (nodeId: string) => {
+  const target = findNodeById(tree, nodeId);
+  if (!target) return;
+  const name = prompt("Имя ребёнка");
   if (!name) return;
 
-  // позже заменим на нормальную форму
+  await addChild(target, name);
+  setTree({ ...tree });
+};
+
+const onDelete = async (nodeId: string) => {
+  const node = findNodeById(tree, nodeId);
+  if (!node) return;
+  if (!confirm(`Удалить ${node.name}?`)) return;
+
+  await deleteNode(node);
+  setTree({ ...tree });
+};
+const onEdit = (nodeId: string) => {
+  const node = findNodeById(tree, nodeId);
+  if (!node) return;
+  const name = prompt("Новое имя", node.name);
+  if (!name) return;
   node.name = name;
   setTree({ ...tree });
 };
 
-const onDelete = (node: TreeNodeData) => {
-  alert("Удаление подключим на следующем шаге");
+const findNodeById = (
+  node: TreeNodeData,
+  id: string
+): TreeNodeData | null => {
+  if (node.id === id) return node;
+
+  for (const child of node.children ?? []) {
+    const found = findNodeById(child, id);
+    if (found) return found;
+  }
+
+  return null;
 };
 
 
@@ -47,7 +84,7 @@ const onDelete = (node: TreeNodeData) => {
   if (!svgRef.current || !gRef.current) return;
 
   const zoomBehavior = zoom<SVGSVGElement, unknown>()
-    .scaleExtent([1, 9])
+    .scaleExtent([0.1, 19])
     .on("zoom", (event) => {
       gRef.current!.setAttribute(
         "transform",
@@ -85,13 +122,12 @@ const onDelete = (node: TreeNodeData) => {
     >
       <g ref={gRef}>
         <SvgNode
-            node={tree}
-            x={800}
-            y={100}
-            onExpand={onExpand}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            />
+          node={layoutedTree}
+          onExpand={onExpand}
+          onAddChild={onAddChild}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
 
       </g>
     </svg>

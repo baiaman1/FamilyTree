@@ -5,4 +5,3 @@ export type TreeNodeData = {
   children?: TreeNodeData[];
   expanded?: boolean;
 };
-

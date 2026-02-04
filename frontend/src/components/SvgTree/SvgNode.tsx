@@ -1,132 +1,144 @@
-import type { TreeNodeData } from "../../types/tree";
-
 type Props = {
-  node: TreeNodeData;
-  x: number;
-  y: number;
-  onExpand: (node: TreeNodeData) => void;
-  onEdit: (node: TreeNodeData) => void;
-  onDelete: (node: TreeNodeData) => void;
+  node: any; // PositionedNode
+  onExpand: (id: string) => void;
+  onAddChild: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 export const SvgNode = ({
   node,
-  x,
-  y,
   onExpand,
+  onAddChild,
   onEdit,
   onDelete,
 }: Props) => {
   return (
     <g>
-      {/* NODE BODY */}
-      <g
-        transform={`translate(${x}, ${y})`}
-        onClick={() => onExpand(node)}
-        style={{ cursor: "pointer" }}
-      >
-        <rect
-          x={-70}
-          y={-18}
-          width={140}
-          height={36}
-          rx={8}
-          fill="#f3f4f6"
+      {/* ЛИНИИ */}
+      {node.children?.map((child: any) => (
+        <line
+          key={child.id}
+          x1={node.x}
+          y1={node.y + 22}
+          x2={child.x}
+          y2={child.y - 22}
           stroke="#9ca3af"
+          strokeWidth={1.5}
+          pointerEvents="none"
+        />
+      ))}
+
+      {/* УЗЕЛ */}
+      <g transform={`translate(${node.x}, ${node.y})`}>
+        {/* ТЕЛО УЗЛА — ТОЛЬКО ОНО EXPAND */}
+        <rect
+          x={-80}
+          y={-22}
+          width={160}
+          height={44}
+          rx={10}
+          fill="#f9fafb"
+          stroke="#9ca3af"
+          pointerEvents="all"
+          style={{ cursor: "pointer" }}
+          onClick={() => onExpand(node.id)}
         />
 
-        {/* TEXT НЕ ПЕРЕХВАТЫВАЕТ КЛИК */}
+        {/* ТЕКСТ — НИКАКИХ EVENTS */}
         <text
           textAnchor="middle"
           dominantBaseline="middle"
-          style={{ pointerEvents: "none", userSelect: "none" }}
+          pointerEvents="none"
+          style={{ userSelect: "none" }}
         >
           {node.name}
         </text>
-      </g>
 
-      {/* ACTION BUTTONS */}
-      <g transform={`translate(${x + 90}, ${y - 18})`}>
-        {/* ADD */}
-        <circle
-          r={8}
-          fill="#22c55e"
-          onClick={(e) => {
-            e.stopPropagation();
-            onExpand(node);
-          }}
-          style={{ cursor: "pointer" }}
-        />
-        <text
-          x={-3}
-          y={4}
-          fontSize="10"
-          fill="white"
-          style={{ pointerEvents: "none" }}
+        {/* КНОПКИ — ОТДЕЛЬНЫЙ СЛОЙ */}
+        <g
+          transform="translate(100, -22)"
+          pointerEvents="all"
         >
-          +
-        </text>
-
-        {/* EDIT */}
-        <g transform="translate(0, 18)">
+          {/* ADD */}
           <circle
-            r={8}
-            fill="#3b82f6"
+            r={9}
+            fill="#22c55e"
+            style={{ cursor: "pointer" }}
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(node);
+              onAddChild(node.id);
             }}
-            style={{ cursor: "pointer" }}
           />
           <text
             x={-4}
             y={4}
-            fontSize="10"
+            fontSize="11"
             fill="white"
-            style={{ pointerEvents: "none" }}
+            pointerEvents="none"
           >
-            ✎
+            +
           </text>
-        </g>
 
-        {/* DELETE */}
-        {!node.hasChildren && (
-          <g transform="translate(0, 36)">
+          {/* EDIT */}
+          <g transform="translate(0, 22)">
             <circle
-              r={8}
-              fill="#ef4444"
+              r={9}
+              fill="#3b82f6"
+              style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(node);
+                onEdit(node.id);
               }}
-              style={{ cursor: "pointer" }}
             />
             <text
               x={-4}
               y={4}
-              fontSize="10"
+              fontSize="11"
               fill="white"
-              style={{ pointerEvents: "none" }}
+              pointerEvents="none"
             >
-              ×
+              ✎
             </text>
           </g>
-        )}
+
+          {/* DELETE */}
+          {!node.hasChildren && (
+            <g transform="translate(0, 44)">
+              <circle
+                r={9}
+                fill="#ef4444"
+                style={{ cursor: "pointer" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(node.id);
+                }}
+              />
+              <text
+                x={-4}
+                y={4}
+                fontSize="11"
+                fill="white"
+                pointerEvents="none"
+              >
+                ×
+              </text>
+            </g>
+          )}
+        </g>
       </g>
 
-      {/* CHILDREN */}
-      {node.expanded &&
-        node.children?.map((child, i) => (
-          <SvgNode
-            key={child.id}
-            node={child}
-            x={x}
-            y={y + 120 + i * 120}
-            onExpand={onExpand}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ))}
+      {/* ДЕТИ */}
+      {node.children?.map((child: any) => (
+        <SvgNode
+          key={child.id}
+          node={child}
+          onExpand={onExpand}
+          onAddChild={onAddChild}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      ))}
     </g>
   );
 };
