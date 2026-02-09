@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -29,13 +29,20 @@ builder.Services.AddCors(options =>
 builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
+app.Urls.Add("http://0.0.0.0:8080");
 
 // SEED
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // ✅ применяем миграции автоматически
+    await db.Database.MigrateAsync();
+
+    // ✅ потом сидинг
     await DbInitializer.SeedRootAsync(db);
 }
+
 
 if (app.Environment.IsDevelopment())
 {

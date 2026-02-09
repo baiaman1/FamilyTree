@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="FamilyTree.Api/WebApi.csproj" />
-  <Project Path="FamilyTree.Application/Application.csproj" />
-  <Project Path="FamilyTree.Domain/Domain.csproj" />
-  <Project Path="FamilyTree.Infrastructure/Infrastructure.csproj" />
+  <Project Path="FamilyTree.Api/FamilyTree.Api.csproj" />
+  <Project Path="FamilyTree.Application/FamilyTree.Application.csproj" />
+  <Project Path="FamilyTree.Domain/FamilyTree.Domain.csproj" />
+  <Project Path="FamilyTree.Infrastructure/FamilyTree.Infrastructure.csproj" />
 </Solution>

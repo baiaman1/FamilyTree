@@ -18,7 +18,7 @@ export const useTreeLayout = (
   );
 
   const layout = tree<TreeNodeData>()
-    .nodeSize([200, 140]); // X / Y расстояния
+    .size([width, height]);
 
   const result = layout(h);
 
