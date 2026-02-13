@@ -29,7 +29,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
-app.Urls.Add("http://0.0.0.0:8080");
+//app.Urls.Add("http://0.0.0.0:8080");
 
 // SEED
 using (var scope = app.Services.CreateScope())

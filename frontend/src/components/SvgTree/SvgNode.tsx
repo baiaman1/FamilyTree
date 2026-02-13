@@ -13,6 +13,8 @@ export const SvgNode = ({
   onEdit,
   onDelete,
 }: Props) => {
+  console.log(node);
+  
   return (
     <g>
       {/* ЛИНИИ */}
@@ -25,7 +27,7 @@ export const SvgNode = ({
           y2={child.y - 22}
           stroke="#9ca3af"
           strokeWidth={1.5}
-          pointerEvents="none"
+          pointerEvents="none"          
         />
       ))}
 
@@ -52,7 +54,7 @@ export const SvgNode = ({
           pointerEvents="none"
           style={{ userSelect: "none" }}
         >
-          {node.name}
+          {node.name} ({node.hasChildren ? "..." : 0})
         </text>
 
         {/* КНОПКИ — ОТДЕЛЬНЫЙ СЛОЙ */}
